@@ -1,0 +1,39 @@
+øThe first challenge is to write an Ansible playbook that installs Filebeat, ElasticSearch & Kibana. 
+Filebeat should be configured to index /var/log/syslog (or /var/log/messages). 
+Include firewall rules, the ports exposed should be configurable with variables in Ansible. 
+Polish it and treat it like it would be used in a production environment.
+
+##Initial Setup
+
+---
+
+- name: Install + configure Filebeat, ElasticSearch, and Kibana
+  user: updoxsvc
+  sudo: True
+  hosts: all
+  tasks:
+
+    - name: Install ElasticSearch
+      apt: pkg=filebeat state=latest
+
+    - name: Install Kibana
+      apt: pkg=kibana state=latest
+
+    - name: Install Filebeat
+      apt: pkg=filebeat state=latest
+      replace:
+        ## Note: Change dest: to path: once Ansible 2.3 changeover confirmed
+        dest: /etc/filebeat/filebeat.yml
+        regexp: '..paths:[\n].+[\n]'
+        replace: '  paths:\n    - /var/log/syslog\n'
+        backup: Yes
+
+    - service:
+      name: filebeat
+      state: restarted
+
+    - ufw:
+        open_ports=[80,443,4096]
+        state: enabled
+        rule: allow
+        port: '{{ open_ports }}'
