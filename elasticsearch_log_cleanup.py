@@ -28,15 +28,6 @@ index_directory = '/var/lib/elasticsearch/data/'
 # date_format = "%Y.%m.%d"
 date_format = "%Y.%m.%d"
 
-## For testing purposes only, create the files before deleting them if they don't exist
-make_days = 10
-if not os.path.exists(index_directory):
-  os.makedirs(index_directory)
-while make_days > 0:
-  currdate = datetime.datetime.now() - datetime.timedelta(days=make_days)
-  F = open(index_directory + matching_pattern + currdate.strftime(date_format), "w")
-  make_days = make_days - 1
-
 #for files in os.listdir(index_directory):
 while retain_days > 0:
   currdate = datetime.datetime.now() - datetime.timedelta(days=retain_days)
