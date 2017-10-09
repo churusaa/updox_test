@@ -1,0 +1,9 @@
+- name: Install + configure Filebeat, ElasticSearch, and Kibana
+  user: churusaa
+  sudo: True
+  hosts: all
+  tasks:
+  - name: Install ElasticSearch
+    apt: 
+      name: elasticsearch 
+      state: latest
