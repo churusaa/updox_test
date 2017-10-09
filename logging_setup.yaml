@@ -4,8 +4,10 @@
   hosts: all
   tasks:
 
-  - name: Ensure dependency is installed (Ubuntu).
-    apt: name=apt-transport-https state=present
+  - name: Make sure apt-transport-https is installed 
+    apt: 
+      name: apt-transport-https 
+      state: present
   
   - name: Add Elasticsearch apt key.
     apt_key:
