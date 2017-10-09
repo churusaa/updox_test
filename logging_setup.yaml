@@ -16,17 +16,21 @@
 
   - name: Add Kibana repository.
     raw: echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-5.x.list
+
 #    apt_repository:
 ## apt-add-repository doesn't work for Kibana yet
 #      repo: 'deb https://packages.elastic.co/kibana/5.x/debian stable main'
 #      state: present
 #      update_cache: yes
+
   - name: Update apt-cache
     apt:
       update_cache: yes   
   - name: Install Kibana
     raw: apt-get install kibana --allow-unauthenticated
+
 #    apt:
+## allow_unauthenticated doesn't accept "yes" as a parameter yet
 #         name: kibana
 #         state: latest 
 #         allow_unauthenticated: yes
@@ -37,10 +41,6 @@
 #       name: elasticsearch 
 #       state: latest
 #       allow_unauthenticated: yes 
-#  - lineinfile:
-#       dest: /etc/apt/sources.list.d/artifacts_elastic_co_packages_5_x_apt.list
-#       state: absent
-#       line: 
 
   - name: Install Filebeat
     apt: 
@@ -52,6 +52,9 @@
      regexp: '..paths:[\n].+[\n]'
      replace: '  paths:\n    - /var/log/syslog\n'
      backup: Yes
+  - service:
+     name: filebeat
+     state: restarted
   
   - ufw:
      state: enabled

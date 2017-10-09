@@ -19,5 +19,6 @@ index_directory = '/var/lib/elasticsearch/data/'
 
 now = time.time()
 
+unix_retain_days = retain_days * 86400
 for files in os.listdir(index_directory):
-	if
+    where name	
