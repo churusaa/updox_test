@@ -13,11 +13,15 @@
       state: present
 
   - name: Add Kibana repository.
-    apt_repository:
-      repo: 'deb https://packages.elastic.co/kibana/5.x/debian stable main'
-      state: present
-      update_cache: yes
-    
+    raw: echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-5.x.list
+#    apt_repository:
+## apt-add-repository doesn't work for Kibana yet
+#      repo: 'deb https://packages.elastic.co/kibana/5.x/debian stable main'
+#      state: present
+#      update_cache: yes
+  - name: Update apt-cache
+    apt:
+      update_cache: yes   
   - name: Install Kibana
     raw: apt-get install kibana --allow-unauthenticated
 #    apt:
