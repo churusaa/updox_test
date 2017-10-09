@@ -4,31 +4,33 @@
   hosts: all
   tasks:
 
-- name: Ensure dependency is installed (Ubuntu).
-  apt: name=apt-transport-https state=present
+  - name: Ensure dependency is installed (Ubuntu).
+    apt: name=apt-transport-https state=present
+  
+  - name: Add Elasticsearch apt key.
+    apt_key:
+      url: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
 
-- name: Add Elasticsearch apt key.
-  apt_key:
-    url: https://packages.elastic.co/GPG-KEY-elasticsearch
-    state: present
-
-- name: Add Kibana repository.
-  apt_repository:
-    repo: 'deb https://packages.elastic.co/kibana/5.x/debian stable main'
-    state: present
-    update_cache: yes
+  - name: Add Kibana repository.
+    apt_repository:
+      repo: 'deb https://packages.elastic.co/kibana/5.x/debian stable main'
+      state: present
+      update_cache: yes
     
   - name: Install Kibana
-    apt:
-       name: kibana
-       state: latest 
-       allow_unauthenticated: True
+    raw: apt-get install kibana --allow-unauthenticated
+#    apt:
+#         name: kibana
+#         state: latest 
+#         allow_unauthenticated: yes
 
   - name: Install ElasticSearch
-    apt: 
-       name: elasticsearch 
-       state: latest
-       allow_unauthenticated: True
+    raw: apt-get install elasticsearch --allow-unauthenticated
+#    apt: 
+#       name: elasticsearch 
+#       state: latest
+#       allow_unauthenticated: yes 
 #  - lineinfile:
 #       dest: /etc/apt/sources.list.d/artifacts_elastic_co_packages_5_x_apt.list
 #       state: absent
@@ -36,18 +38,22 @@
 
   - name: Install Filebeat
     apt: 
-       name: filebeat
-       state: latest
+     name: filebeat
+     state: latest
   - replace:
-       ## Note: Change dest: to path: once Ansible 2.3 changeover confirmed
-       dest: /etc/filebeat/filebeat.yml
-       regexp: '..paths:[\n].+[\n]'
-       replace: '  paths:\n    - /var/log/syslog\n'
-       backup: Yes
-
+     ## Note: Change dest: to path: once Ansible 2.3 changeover confirmed
+     dest: /etc/filebeat/filebeat.yml
+     regexp: '..paths:[\n].+[\n]'
+     replace: '  paths:\n    - /var/log/syslog\n'
+     backup: Yes
+  
   - ufw:
-      vars:
-        open_ports=[80,443,4096]
-      state: enabled
-      rule: allow
-      port: '{{ open_ports }}'
+     state: enabled
+     rule: allow
+     port: '{{ item }}'
+    with_items:
+     - 80
+     - 443
+     - 5601
+     - 9300
+     - 5044
